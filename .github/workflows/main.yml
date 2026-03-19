@@ -1,0 +1,33 @@
+name: Daily Stock Analysis
+
+on:
+  schedule:
+    - cron: '0 9 * * 1-5' # 协调世界时 9:00 (北京时间 17:00)，周一至周五运行
+  workflow_dispatch: # 允许你手动点击按钮立即运行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          # 如果原项目没写依赖，通常需要安装这些：
+          # pip install pandas tushare matplotlib 
+
+      - name: Run analysis
+        run: python main.py # 这里改成项目中实际的启动文件名
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: output # 这里改成项目生成分析结果（图片或HTML）的文件夹名
+          branch: gh-pages # 结果会自动同步到这个分支用于展示
